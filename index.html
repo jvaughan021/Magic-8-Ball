@@ -261,7 +261,7 @@
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
         }
 
         .input-label {
@@ -282,7 +282,7 @@
             font-family: inherit;
             font-size: 0.95rem;
             resize: none;
-            height: 80px;
+            height: 90px;
             transition: all 0.2s ease;
         }
 
@@ -299,27 +299,13 @@
             color: var(--text-muted);
         }
 
-        .button-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.75rem;
-            margin-top: 1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        @media (max-width: 480px) {
-            .button-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
         .shake-btn {
             width: 100%;
             background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
             color: white;
             border: none;
             border-radius: 10px;
-            padding: 0.9rem;
+            padding: 0.95rem;
             font-size: 0.95rem;
             font-weight: 700;
             letter-spacing: 0.05em;
@@ -327,7 +313,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.4rem;
+            gap: 0.5rem;
             transition: all 0.2s ease;
             box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
         }
@@ -335,18 +321,6 @@
         .shake-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(124, 58, 237, 0.6);
-        }
-
-        .secondary-btn {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: #cbd5e1;
-        }
-
-        .secondary-btn:hover:not(:disabled) {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.25);
-            color: #ffffff;
         }
 
         .shake-btn:disabled {
@@ -358,7 +332,7 @@
             text-align: center;
             font-size: 0.82rem;
             color: var(--text-muted);
-            margin-top: 0.75rem;
+            margin-top: 1rem;
         }
 
         /* Info Cards */
@@ -469,15 +443,6 @@
                     <span>✨</span> Shake the 8-Ball
                 </button>
 
-                <div class="button-row">
-                    <button class="shake-btn secondary-btn" id="dailyBtn">
-                        <span>🔮</span> Daily Fortune
-                    </button>
-                    <button class="shake-btn secondary-btn" id="shareBtn" disabled>
-                        <span>📋</span> Copy Fortune
-                    </button>
-                </div>
-
                 <div class="action-status" id="actionStatus" aria-live="polite">
                     Your answer is waiting to be discovered.
                 </div>
@@ -537,8 +502,6 @@
         const charCount = document.getElementById('charCount');
         const errorMsg = document.getElementById('errorMsg');
         const shakeBtn = document.getElementById('shakeBtn');
-        const dailyBtn = document.getElementById('dailyBtn');
-        const shareBtn = document.getElementById('shareBtn');
         const magicBall = document.getElementById('magicBall');
         const answerWindow = document.getElementById('answerWindow');
         const fortuneText = document.getElementById('fortuneText');
@@ -546,9 +509,6 @@
 
         let lastAnswerIndex = -1;
         let isShaking = false;
-        let currentFortune = "";
-
-        // Persistent AudioContext for 100% reliable sound across all shakes
         let audioCtx = null;
 
         function getAudioContext() {
@@ -599,7 +559,6 @@
             } catch (e) {}
         }
 
-        // Character counter update
         questionInput.addEventListener('input', () => {
             const length = questionInput.value.length;
             charCount.textContent = `${length}/240`;
@@ -608,43 +567,31 @@
             }
         });
 
-        // Event Listeners with Audio Context activation on click
         shakeBtn.addEventListener('click', () => {
             getAudioContext();
-            performShake('question');
-        });
-        dailyBtn.addEventListener('click', () => {
-            getAudioContext();
-            handleDailyFortune();
-        });
-        shareBtn.addEventListener('click', () => {
-            getAudioContext();
-            handleShare();
+            performShake();
         });
 
         questionInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 getAudioContext();
-                performShake('question');
+                performShake();
             }
         });
 
-        function performShake(mode) {
+        function performShake() {
             if (isShaking) return;
 
-            if (mode === 'question') {
-                const questionText = questionInput.value.trim();
-                if (!questionText) {
-                    errorMsg.style.display = 'block';
-                    questionInput.focus();
-                    return;
-                }
+            const questionText = questionInput.value.trim();
+            if (!questionText) {
+                errorMsg.style.display = 'block';
+                questionInput.focus();
+                return;
             }
 
             isShaking = true;
             shakeBtn.disabled = true;
-            dailyBtn.disabled = true;
             errorMsg.style.display = 'none';
             actionStatus.textContent = "The ball is tumbling through the unknown...";
 
@@ -653,46 +600,32 @@
             fortuneText.style.opacity = '0.2';
             magicBall.classList.add('shaking');
 
-            let selectedAnswer;
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * answers.length);
+            } while (randomIndex === lastAnswerIndex && answers.length > 1);
+            lastAnswerIndex = randomIndex;
 
-            if (mode === 'daily') {
-                const todayStr = new Date().toDateString();
-                let hash = 2166136261;
-                for (let i = 0; i < todayStr.length; i++) {
-                    hash ^= todayStr.charCodeAt(i);
-                    hash = Math.imul(hash, 16777619);
-                }
-                const dailyIndex = Math.abs(hash) % answers.length;
-                selectedAnswer = answers[dailyIndex];
-            } else {
-                let randomIndex;
-                do {
-                    randomIndex = Math.floor(Math.random() * answers.length);
-                } while (randomIndex === lastAnswerIndex && answers.length > 1);
-                lastAnswerIndex = randomIndex;
-                selectedAnswer = answers[randomIndex];
-            }
+            const selected = answers[randomIndex];
 
             setTimeout(() => {
                 magicBall.classList.remove('shaking');
                 playMysticSound('reveal');
                 
-                currentFortune = selectedAnswer.text;
-
-                if (currentFortune.length > 22) {
+                if (selected.text.length > 22) {
                     fortuneText.style.fontSize = '0.7rem';
-                } else if (currentFortune.length > 15) {
+                } else if (selected.text.length > 15) {
                     fortuneText.style.fontSize = '0.76rem';
                 } else {
                     fortuneText.style.fontSize = '0.88rem';
                 }
 
-                if (selectedAnswer.type === 'positive') {
+                if (selected.type === 'positive') {
                     answerWindow.style.background = 'radial-gradient(circle, #064e3b 0%, #022c22 100%)';
                     answerWindow.style.boxShadow = 'inset 0 10px 25px rgba(0,0,0,0.95), 0 0 20px rgba(20, 184, 166, 0.7)';
                     fortuneText.style.color = '#6ee7b7';
                     fortuneText.style.textShadow = '0 0 8px rgba(52, 211, 153, 0.8)';
-                } else if (selectedAnswer.type === 'neutral') {
+                } else if (selected.type === 'neutral') {
                     answerWindow.style.background = 'radial-gradient(circle, #1e293b 0%, #0f172a 100%)';
                     answerWindow.style.boxShadow = 'inset 0 10px 25px rgba(0,0,0,0.95), 0 0 20px rgba(59, 130, 246, 0.7)';
                     fortuneText.style.color = '#93c5fd';
@@ -704,75 +637,13 @@
                     fortuneText.style.textShadow = '0 0 8px rgba(248, 113, 113, 0.8)';
                 }
 
-                fortuneText.textContent = currentFortune;
+                fortuneText.textContent = selected.text;
                 fortuneText.style.opacity = '1';
                 
-                if (mode === 'daily') {
-                    actionStatus.textContent = "Your official daily fortune has been revealed! Come back tomorrow for a new one.";
-                } else {
-                    actionStatus.textContent = "The ball has spoken. Ask again whenever you like.";
-                }
-
+                actionStatus.textContent = "The ball has spoken. Ask again whenever you like.";
                 shakeBtn.disabled = false;
-                dailyBtn.disabled = false;
-                shareBtn.disabled = false;
                 isShaking = false;
             }, 600);
-        }
-
-        function handleDailyFortune() {
-            const todayKey = 'magic8ball_daily_' + new Date().toDateString();
-            const savedFortune = localStorage.getItem(todayKey);
-
-            if (savedFortune) {
-                const parsed = JSON.parse(savedFortune);
-                currentFortune = parsed.text;
-                
-                if (parsed.type === 'positive') {
-                    answerWindow.style.background = 'radial-gradient(circle, #064e3b 0%, #022c22 100%)';
-                    answerWindow.style.boxShadow = 'inset 0 10px 25px rgba(0,0,0,0.95), 0 0 20px rgba(20, 184, 166, 0.7)';
-                    fortuneText.style.color = '#6ee7b7';
-                    fortuneText.style.textShadow = '0 0 8px rgba(52, 211, 153, 0.8)';
-                } else if (parsed.type === 'neutral') {
-                    answerWindow.style.background = 'radial-gradient(circle, #1e293b 0%, #0f172a 100%)';
-                    answerWindow.style.boxShadow = 'inset 0 10px 25px rgba(0,0,0,0.95), 0 0 20px rgba(59, 130, 246, 0.7)';
-                    fortuneText.style.color = '#93c5fd';
-                    fortuneText.style.textShadow = '0 0 8px rgba(96, 165, 250, 0.8)';
-                } else {
-                    answerWindow.style.background = 'radial-gradient(circle, #7f1d1d 0%, #450a0a 100%)';
-                    answerWindow.style.boxShadow = 'inset 0 10px 25px rgba(0,0,0,0.95), 0 0 20px rgba(244, 63, 94, 0.7)';
-                    fortuneText.style.color = '#fca5a5';
-                    fortuneText.style.textShadow = '0 0 8px rgba(248, 113, 113, 0.8)';
-                }
-
-                fortuneText.textContent = currentFortune;
-                fortuneText.style.opacity = '1';
-                shareBtn.disabled = false;
-                actionStatus.textContent = "You already received your daily fortune today. Come back tomorrow!";
-            } else {
-                performShake('daily');
-                setTimeout(() => {
-                    const activeAns = answers.find(a => a.text === currentFortune);
-                    if (activeAns) {
-                        localStorage.setItem(todayKey, JSON.stringify(activeAns));
-                    }
-                }, 700);
-            }
-        }
-
-        function handleShare() {
-            if (!currentFortune) return;
-            const shareText = `🔮 Magic 8-Ball Fortune: "${currentFortune}" — Ask your question too!`;
-            
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(shareText).then(() => {
-                    const originalText = shareBtn.innerHTML;
-                    shareBtn.innerHTML = "<span>✅</span> Copied!";
-                    setTimeout(() => {
-                        shareBtn.innerHTML = originalText;
-                    }, 2000);
-                });
-            }
         }
     </script>
 </body>
