@@ -3,696 +3,592 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Magic 8-Ball - Ask the Unknown</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+    <title>Magic 8-Ball — Ask the Unknown</title>
     <style>
         :root {
-            --font-heading: 'Cinzel', serif;
-            --font-body: 'Plus Jakarta Sans', sans-serif;
+            --bg-deep: #060814;
+            --bg-card: rgba(15, 22, 41, 0.6);
+            --border-glow: rgba(139, 92, 246, 0.2);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-glow: rgba(99, 102, 241, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: var(--font-body);
-            background-color: #070913;
-            color: #e2e8f0;
-            overflow-x: hidden;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
             min-height: 100vh;
-        }
-
-        .font-heading {
-            font-family: var(--font-heading);
-        }
-
-        /* Safe area padding for mobile notch/status bars */
-        .header-safe-padding {
-            padding-top: max(24px, env(safe-area-inset-top));
-        }
-
-        /* Ambient starry background styling */
-        .space-bg {
-            background-color: #070913;
-            background-image: 
-                radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.8), rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.5), rgba(0,0,0,0)),
-                radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.7), rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 160px 120px, rgba(255, 255, 255, 0.9), rgba(0,0,0,0)),
-                radial-gradient(1.5px 1.5px at 230px 190px, rgba(255, 255, 255, 0.6), rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 310px 80px, rgba(255, 255, 255, 0.8), rgba(0,0,0,0)),
-                radial-gradient(1px 1px at 370px 240px, rgba(255, 255, 255, 0.5), rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 450px 150px, rgba(255, 255, 255, 0.7), rgba(0,0,0,0));
-            background-repeat: repeat;
-            background-size: 500px 300px;
-        }
-
-        /* -------------------------------------------------------------
-           PURE CSS 3D REALISTIC MAGIC 8-BALL
-           Calculated dimensions to keep 8 disc & window fully distinct
-           ------------------------------------------------------------- */
-        .ball-container {
-            perspective: 1000px;
-            width: 100%;
-            max-width: 380px;
-            aspect-ratio: 1 / 1;
-            margin: 0 auto;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
             position: relative;
         }
 
-        .eight-ball {
+        /* Starry background effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                radial-gradient(white 1px, transparent 0),
+                radial-gradient(rgba(139,92,246,0.5) 1px, transparent 0);
+            background-size: 50px 50px, 80px 80px;
+            background-position: 0 0, 40px 40px;
+            opacity: 0.15;
+            z-index: -1;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            max-width: 1200px;
             width: 100%;
-            height: 100%;
+            margin: 0 auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            font-size: 0.95rem;
+        }
+
+        .brand-icon {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #8b5cf6;
             border-radius: 50%;
             position: relative;
-            /* 3D sphere gradient with deep highlight rim and ambient lighting */
-            background: radial-gradient(circle at 35% 22%, 
-                #4e5465 0%, 
-                #222634 20%, 
-                #11131a 45%, 
-                #08090d 70%, 
-                #020204 100%);
-            box-shadow: 
-                inset -12px -12px 30px rgba(0, 0, 0, 0.9),
-                inset 10px 10px 20px rgba(255, 255, 255, 0.15),
-                0 25px 50px -12px rgba(0, 0, 0, 0.95),
-                0 0 40px rgba(79, 70, 229, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-icon::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #8b5cf6;
+            border-radius: 50%;
+        }
+
+        .status-indicator {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.35rem 0.85rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        main {
+            flex: 1;
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 1rem 1.5rem 3rem 1.5rem;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
-            padding-top: 28px;
-            user-select: none;
-            transition: box-shadow 0.5s ease;
         }
 
-        /* Curved glass glare on top left rim */
-        .eight-ball::before {
-            content: '';
-            position: absolute;
-            top: 6%;
-            left: 14%;
-            width: 55%;
-            height: 35%;
-            border-radius: 50%;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 70%);
-            pointer-events: none;
-            filter: blur(1px);
+        .hero-section {
+            text-align: center;
+            margin-bottom: 2.5rem;
         }
 
-        /* Bottom realistic soft shadow shadow */
-        .ball-shadow {
-            position: absolute;
-            bottom: -18px;
-            left: 10%;
-            width: 80%;
-            height: 36px;
-            background: radial-gradient(ellipse at center, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 75%);
-            border-radius: 50%;
-            z-index: -1;
-            filter: blur(6px);
+        h1 {
+            font-size: clamp(2.2rem, 5vw, 3.8rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #ffffff 30%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.75rem;
         }
 
-        /* Number 8 Circle Disc - 100% Crisp & Fully Visible */
-        .eight-disc {
-            width: 88px;
-            height: 88px;
-            background: radial-gradient(circle at 35% 35%, #ffffff 0%, #f1f5f9 60%, #cbd5e1 100%);
-            border-radius: 50%;
-            display: flex;
+        .subtitle {
+            color: var(--text-muted);
+            font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+            max-width: 540px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
             align-items: center;
-            justify-content: center;
-            box-shadow: 
-                0 3px 8px rgba(0, 0, 0, 0.6),
-                inset 0 -3px 5px rgba(0, 0, 0, 0.15);
-            z-index: 10;
-            margin-bottom: 22px;
-            flex-shrink: 0;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            width: 100%;
+            max-width: 950px;
+            margin-bottom: 3.5rem;
         }
 
-        .eight-number {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-weight: 900;
-            font-size: 3rem;
-            line-height: 1;
-            color: #0f172a;
-            letter-spacing: -1px;
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+                justify-items: center;
+                gap: 2rem;
+            }
         }
 
-        /* Circular Dark Fortune Window */
-        .window-outer {
-            width: 175px;
-            height: 175px;
-            border-radius: 50%;
-            background: #020306;
-            border: 4px solid #1a1d27;
-            box-shadow: 
-                inset 0 0 18px rgba(0,0,0,0.95),
-                0 0 15px rgba(0, 0, 0, 0.8);
+        /* Magic 8-Ball Styling */
+        .ball-container {
             position: relative;
+            width: 280px;
+            height: 280px;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            z-index: 5;
-            transition: border-color 0.5s ease, box-shadow 0.5s ease;
         }
 
-        /* Glass reflection layer over fortune window */
-        .window-glass {
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 50%);
-            z-index: 8;
-            pointer-events: none;
-        }
-
-        /* Floating Triangle inside liquid */
-        .triangle-wrapper {
-            position: relative;
-            width: 125px;
-            height: 110px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease;
-            z-index: 6;
-        }
-
-        .svg-triangle {
-            position: absolute;
+        .magic-ball {
             width: 100%;
             height: 100%;
-            filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.6));
-            transition: filter 0.5s ease;
+            background: radial-gradient(circle at 35% 35%, #383838 0%, #121212 50%, #000000 100%);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 
+                inset 0 -20px 40px rgba(0, 0, 0, 0.9),
+                inset 10px 10px 25px rgba(255, 255, 255, 0.15),
+                0 20px 30px rgba(0, 0, 0, 0.6),
+                0 0 50px rgba(99, 102, 241, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s ease;
         }
 
-        .triangle-path {
-            fill: rgba(15, 23, 42, 0.85);
-            stroke: #3b82f6;
-            stroke-width: 2.5;
-            stroke-linejoin: round;
-            transition: stroke 0.5s ease, fill 0.5s ease;
+        .ball-number-badge {
+            width: 54px;
+            height: 54px;
+            background: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #111111;
+            margin-bottom: 12px;
+            box-shadow: inset 0 -3px 6px rgba(0,0,0,0.3), 0 3px 8px rgba(0,0,0,0.4);
         }
 
-        .answer-text-container {
-            position: absolute;
-            inset: 0;
-            top: 18px; /* Position text properly inside downward triangle */
+        .answer-window {
+            width: 130px;
+            height: 130px;
+            background: #050508;
+            border-radius: 50%;
+            border: 4px solid #1a1a24;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: inset 0 10px 20px rgba(0,0,0,0.9);
+            overflow: hidden;
+        }
+
+        .fortune-triangle {
+            width: 90px;
+            height: 80px;
+            background: linear-gradient(135deg, #0b1329 0%, #030612 100%);
+            clip-path: polygon(50% 100%, 0% 15%, 100% 15%);
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 0 16px;
-            z-index: 7;
+            padding: 22px 10px 6px 10px;
+            transition: all 0.4s ease;
+            box-shadow: inset 0 0 12px rgba(59, 130, 246, 0.3);
         }
 
-        .answer-text {
-            color: #93c5fd;
-            font-weight: 800;
+        .fortune-text {
+            font-size: 0.72rem;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            line-height: 1.15;
-            text-shadow: 0 0 8px rgba(59, 130, 246, 0.8);
-            transition: color 0.5s ease, text-shadow 0.5s ease;
-            max-width: 95px;
-            word-wrap: break-word;
+            color: #93c5fd;
+            line-height: 1.25;
+            word-break: break-word;
         }
 
-        /* Shake animation keyframes */
-        @keyframes shake3D {
-            0% { transform: translate3d(0, 0, 0) rotate(0deg); }
-            12% { transform: translate3d(-18px, -12px, 0) rotate(-8deg); }
-            25% { transform: translate3d(18px, 10px, 0) rotate(8deg); }
-            37% { transform: translate3d(-14px, 8px, 0) rotate(-5deg); }
-            50% { transform: translate3d(14px, -8px, 0) rotate(5deg); }
-            62% { transform: translate3d(-8px, 5px, 0) rotate(-3deg); }
-            75% { transform: translate3d(8px, -3px, 0) rotate(2deg); }
-            87% { transform: translate3d(-4px, 2px, 0) rotate(-1deg); }
-            100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+        /* Shake Animation */
+        @keyframes shake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-10px, 5px) rotate(-6deg); }
+            40% { transform: translate(10px, -5px) rotate(6deg); }
+            60% { transform: translate(-8px, 4px) rotate(-4deg); }
+            80% { transform: translate(8px, -4px) rotate(4deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
         }
 
         .shaking {
-            animation: shake3D 0.85s ease-in-out;
+            animation: shake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
         }
 
-        /* Reduced motion accessibility support */
-        @media (prefers-reduced-motion: reduce) {
-            .shaking {
-                animation: none !important;
-                opacity: 0.7;
-                transition: opacity 0.3s;
-            }
-            .triangle-wrapper {
-                transition: opacity 0.3s !important;
-            }
+        /* Question Panel Styling */
+        .question-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
+            padding: 2rem;
+            width: 100%;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
-        /* Window Tints based on answer polarity */
-        .tint-positive .triangle-path {
-            stroke: #10b981;
-            fill: rgba(6, 78, 59, 0.85);
-        }
-        .tint-positive .answer-text {
-            color: #6ee7b7;
-            text-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
-        }
-        .tint-positive .svg-triangle {
-            filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.7));
+        .question-panel h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
         }
 
-        .tint-neutral .triangle-path {
-            stroke: #3b82f6;
-            fill: rgba(30, 58, 138, 0.85);
-        }
-        .tint-neutral .answer-text {
-            color: #93c5fd;
-            text-shadow: 0 0 8px rgba(59, 130, 246, 0.8);
-        }
-        .tint-neutral .svg-triangle {
-            filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.7));
+        .question-panel p {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            margin-bottom: 1.25rem;
+            line-height: 1.4;
         }
 
-        .tint-negative .triangle-path {
-            stroke: #f43f5e;
-            fill: rgba(136, 19, 55, 0.85);
-        }
-        .tint-negative .answer-text {
-            color: #fda4af;
-            text-shadow: 0 0 8px rgba(244, 63, 94, 0.8);
-        }
-        .tint-negative .svg-triangle {
-            filter: drop-shadow(0 0 10px rgba(244, 63, 94, 0.7));
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
         }
 
-        /* Glow effects for Shake Button */
-        .glow-button {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #2563eb 100%);
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4), inset 0 1px 1px rgba(255,255,255,0.3);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .input-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #a78bfa;
         }
 
-        .glow-button:hover:not(:disabled) {
+        textarea {
+            width: 100%;
+            background: rgba(5, 7, 15, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: none;
+            height: 90px;
+            transition: all 0.2s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+        }
+
+        .input-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .shake-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.95rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+        }
+
+        .shake-btn:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 0 30px rgba(124, 58, 237, 0.6), inset 0 1px 2px rgba(255,255,255,0.5);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.6);
         }
 
-        .glow-button:active:not(:disabled) {
-            transform: translateY(1px);
-        }
-
-        .glow-button:disabled {
+        .shake-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
-            box-shadow: none;
         }
 
-        /* Responsive tweak for smaller mobile screens */
-        @media (max-width: 380px) {
-            .ball-container {
-                max-width: 300px;
+        .action-status {
+            text-align: center;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-top: 1rem;
+        }
+
+        /* Info Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+            width: 100%;
+            max-width: 950px;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
             }
-            .eight-disc {
-                width: 72px;
-                height: 72px;
-                margin-bottom: 14px;
-            }
-            .eight-number {
-                font-size: 2.4rem;
-            }
-            .window-outer {
-                width: 140px;
-                height: 140px;
-            }
-            .triangle-wrapper {
-                width: 100px;
-                height: 90px;
-            }
-            .answer-text-container {
-                top: 12px;
-            }
+        }
+
+        .info-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .info-card h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .info-card p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 2rem 1.5rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        footer .footer-title {
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            color: #cbd5e1;
         }
     </style>
 </head>
-<body class="space-bg antialiased text-slate-200 flex flex-col min-h-screen">
+<body>
 
-    <!-- Ambient background blurred light nodes -->
-    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-indigo-900/20 blur-[120px] pointer-events-none rounded-full"></div>
-    <div class="fixed bottom-0 right-0 w-96 h-96 bg-purple-900/15 blur-[140px] pointer-events-none rounded-full"></div>
-
-    <!-- MAIN HEADER BAR -->
-    <header class="header-safe-padding w-full px-4 sm:px-8 border-b border-slate-800/80 bg-slate-950/40 backdrop-blur-md relative z-20">
-        <div class="max-w-6xl mx-auto flex items-center justify-between h-16">
-            <!-- Branding -->
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center shadow-inner">
-                    <span class="font-black text-xs text-indigo-400">8</span>
-                </div>
-                <span class="font-heading font-bold text-lg sm:text-xl tracking-wider text-slate-100">
-                    MAGIC <span class="text-indigo-400">8-BALL</span>
-                </span>
-            </div>
-
-            <!-- Status Indicator -->
-            <div class="flex items-center gap-2 bg-slate-900/80 border border-slate-800 rounded-full px-3.5 py-1.5 text-xs font-medium text-slate-300">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span id="headerStatus">READY TO ANSWER</span>
-            </div>
+    <header>
+        <div class="brand">
+            <div class="brand-icon"></div>
+            <span>MAGIC 8-BALL</span>
         </div>
+        <div class="status-indicator">Ready to Answer</div>
     </header>
 
-    <!-- CONTENT WRAPPER -->
-    <main class="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 relative z-10 flex flex-col justify-center">
-
-        <!-- TITLE & SUBTITLE SECTION -->
-        <section class="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
-            <h1 class="font-heading font-extrabold text-3xl sm:text-5xl lg:text-6xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-100 via-indigo-200 to-purple-300 mb-4">
-                Ask the Unknown.
-            </h1>
-            <p class="text-base sm:text-lg text-slate-400 leading-relaxed font-normal">
-                Clear your mind, ask a question, and let the Magic 8-Ball reveal what fate has to say.
-            </p>
+    <main>
+        <section class="hero-section">
+            <h1>Ask the Unknown.</h1>
+            <p class="subtitle">Clear your mind, ask a question, and let the Magic 8-Ball reveal what fate has to say.</p>
         </section>
 
-        <!-- MAIN INTERACTIVE SECTION (2 Columns on Desktop) -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-            
-            <!-- LEFT COLUMN: REALISTIC 3D MAGIC 8-BALL -->
-            <div class="lg:col-span-6 flex flex-col items-center justify-center">
-                <div class="ball-container">
-                    <div id="eightBall" class="eight-ball" role="img" aria-label="Magic 8-Ball showing fortune window">
-                        
-                        <!-- Crisp White 8 Disc (Guaranteed 100% visible) -->
-                        <div class="eight-disc">
-                            <span class="eight-number">8</span>
+        <div class="content-grid">
+            <!-- Magic 8-Ball Display -->
+            <div class="ball-container">
+                <div class="magic-ball" id="magicBall">
+                    <div class="ball-number-badge">8</div>
+                    <div class="answer-window">
+                        <div class="fortune-triangle" id="fortuneTriangle">
+                            <span class="fortune-text" id="fortuneText">ASK AWAY</span>
                         </div>
-
-                        <!-- Dark Fortune Window -->
-                        <div id="windowOuter" class="window-outer tint-neutral">
-                            <div class="window-glass"></div>
-                            
-                            <!-- Floating Translucent Triangle -->
-                            <div id="triangleWrapper" class="triangle-wrapper">
-                                <svg class="svg-triangle" viewBox="0 0 100 87" preserveAspectRatio="none">
-                                    <!-- Pointing downward triangle -->
-                                    <polygon points="50,82 5,10 95,10" class="triangle-path" />
-                                </svg>
-                                
-                                <div class="answer-text-container">
-                                    <span id="answerText" class="answer-text text-xs sm:text-sm">ASK AWAY</span>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
-                    <!-- Soft Ground Shadow -->
-                    <div class="ball-shadow"></div>
-                </div>
-
-                <!-- Live Region for Screen Readers -->
-                <div id="srLiveAnswer" class="sr-only" aria-live="polite"></div>
-            </div>
-
-            <!-- RIGHT COLUMN: QUESTION INPUT & SHAKE CONTROL -->
-            <div class="lg:col-span-6 bg-slate-900/60 border border-slate-800/90 rounded-2xl p-6 sm:p-8 backdrop-blur-sm shadow-xl">
-                <h2 class="font-heading text-xl sm:text-2xl font-bold text-slate-100 mb-2">
-                    What’s on your mind?
-                </h2>
-                <p class="text-sm text-slate-400 mb-6">
-                    Ask any yes-or-no question. Focus on your question for maximum clarity before shaking.
-                </p>
-
-                <form id="questionForm" onsubmit="event.preventDefault(); shakeBall();">
-                    <!-- Form Control -->
-                    <div class="mb-5">
-                        <div class="flex justify-between items-center mb-2">
-                            <label for="userQuestion" class="text-xs font-bold tracking-wider text-indigo-300 uppercase">
-                                Your Question
-                            </label>
-                            <span id="charCounter" class="text-xs text-slate-500 font-mono">0 / 240</span>
-                        </div>
-                        
-                        <div class="relative">
-                            <textarea 
-                                id="userQuestion" 
-                                rows="3"
-                                maxlength="240"
-                                placeholder="Will something good happen today?"
-                                class="w-full bg-slate-950/80 border border-slate-700/80 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition text-sm sm:text-base resize-none"
-                            ></textarea>
-                        </div>
-                        
-                        <!-- Validation Message -->
-                        <p id="validationMsg" class="hidden text-rose-400 text-xs mt-2 flex items-center gap-1.5">
-                            <i class="fa-solid font-bold fa-circle-exclamation"></i>
-                            <span>Please type a question first before asking the 8-Ball!</span>
-                        </p>
-                    </div>
-
-                    <!-- Shake Button -->
-                    <button 
-                        type="submit" 
-                        id="shakeBtn"
-                        class="glow-button w-full py-4 px-6 rounded-xl text-white font-extrabold text-sm sm:text-base tracking-wider uppercase flex items-center justify-center gap-3 cursor-pointer"
-                    >
-                        <i class="fa-solid fa-hand-sparkles text-lg"></i>
-                        <span>Shake The 8-Ball</span>
-                    </button>
-                </form>
-
-                <!-- Status Feedback below button -->
-                <div class="mt-4 text-center">
-                    <p id="statusMsg" class="text-xs text-slate-400 italic">
-                        Your answer is waiting to be discovered.
-                    </p>
                 </div>
             </div>
 
+            <!-- Question Panel -->
+            <div class="question-panel">
+                <h2>What's on your mind?</h2>
+                <p>Focus on one question. When you're ready, give the ball a shake and see what answer appears.</p>
+                
+                <div class="input-group">
+                    <label class="input-label" for="questionInput">Your Question</label>
+                    <textarea id="questionInput" maxlength="240" placeholder="Will something good happen today?"></textarea>
+                    <div class="input-meta">
+                        <span id="errorMsg" style="color: #f87171; display: none;">Please enter a question first.</span>
+                        <span id="errorMsg" style="visibility: hidden;"></span>
+                        <span id="charCount">0/240</span>
+                    </div>
+                </div>
+
+                <button class="shake-btn" id="shakeBtn">
+                    <span>✨</span> Shake the 8-Ball
+                </button>
+
+                <div class="action-status" id="actionStatus" aria-live="polite">
+                    Your answer is waiting to be discovered.
+                </div>
+            </div>
         </div>
 
-        <!-- THREE SUPPORTING FEATURE CARDS -->
-        <section class="mt-16 sm:mt-24 grid grid-cols-1 md:grid-cols-3 gap-6">
-            
-            <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-6 flex flex-col items-start">
-                <div class="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-4 text-lg">
-                    <i class="fa-solid fa-list-check"></i>
-                </div>
-                <h3 class="font-heading font-bold text-base text-slate-200 mb-1">20 Possible Answers</h3>
-                <p class="text-xs text-slate-400 leading-relaxed">
-                    Featuring all 20 classic official fortunes categorized into positive, neutral, and negative responses.
-                </p>
+        <!-- Info Cards -->
+        <div class="cards-grid">
+            <div class="info-card">
+                <h3>20 possible answers</h3>
+                <p>Positive, neutral, and negative fortunes.</p>
             </div>
-
-            <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-6 flex flex-col items-start">
-                <div class="w-10 h-10 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mb-4 text-lg">
-                    <i class="fa-solid fa-rotate"></i>
-                </div>
-                <h3 class="font-heading font-bold text-base text-slate-200 mb-1">Ask As Often As You Like</h3>
-                <p class="text-xs text-slate-400 leading-relaxed">
-                    Every shake utilizes balanced randomness while avoiding immediate duplicate results for a fresh experience.
-                </p>
+            <div class="info-card">
+                <h3>Ask as often as you like</h3>
+                <p>Every shake brings a fresh random answer.</p>
             </div>
-
-            <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-6 flex flex-col items-start">
-                <div class="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center mb-4 text-lg">
-                    <i class="fa-solid fa-user-shield"></i>
-                </div>
-                <h3 class="font-heading font-bold text-base text-slate-200 mb-1">Your Question Stays Yours</h3>
-                <p class="text-xs text-slate-400 leading-relaxed">
-                    Everything runs 100% locally in your browser. Questions are never stored, logged, or sent to any server.
-                </p>
+            <div class="info-card">
+                <h3>Your question stays yours</h3>
+                <p>This page doesn't save or send your question.</p>
             </div>
-
-        </section>
-
+        </div>
     </main>
 
-    <!-- FOOTER -->
-    <footer class="mt-auto border-t border-slate-800/60 py-8 px-4 text-center bg-slate-950/80 relative z-10">
-        <p class="font-heading font-bold text-sm text-slate-300 tracking-wider">THE MAGIC 8-BALL</p>
-        <p class="text-xs text-slate-500 mt-1">For fun, curiosity, and a little mystery.</p>
+    <!-- Footer containing the discreet, non-annoying ad unit -->
+    <footer>
+        <div id="frame" style="width: 100%; max-width: 728px; margin: 0 auto 1rem auto; position: relative; z-index: 10;">
+            <iframe data-aa='2458977' src='//acceptable.a-ads.com/2458977/?size=Adaptive' style='border:0; padding:0; width:100%; height:auto; overflow:hidden; display:block; margin: auto;'></iframe>
+        </div>
+        <div class="footer-title">THE MAGIC 8-BALL</div>
+        <div>For fun, curiosity, and a little mystery.</div>
     </footer>
 
-    <!-- INTERACTION LOGIC & AUDIO ENGINE -->
     <script>
-        // Standard 20 Magic 8-Ball Answers
-        const ANSWERS = [
-            // 10 Positive Answers
-            { text: "It is certain", type: "positive" },
-            { text: "It is decidedly so", type: "positive" },
-            { text: "Without a doubt", type: "positive" },
-            { text: "Yes definitely", type: "positive" },
-            { text: "You may rely on it", type: "positive" },
-            { text: "As I see it, yes", type: "positive" },
-            { text: "Most likely", type: "positive" },
-            { text: "Outlook good", type: "positive" },
-            { text: "Yes", type: "positive" },
-            { text: "Signs point to yes", type: "positive" },
-
-            // 5 Neutral Answers
-            { text: "Reply hazy, try again", type: "neutral" },
-            { text: "Ask again later", type: "neutral" },
-            { text: "Better not tell you now", type: "neutral" },
-            { text: "Cannot predict now", type: "neutral" },
-            { text: "Concentrate and ask again", type: "neutral" },
-
-            // 5 Negative Answers
-            { text: "Don't count on it", type: "negative" },
-            { text: "My reply is no", type: "negative" },
-            { text: "My sources say no", type: "negative" },
-            { text: "Outlook not so good", type: "negative" },
-            { text: "Very doubtful", type: "negative" }
+        const answers = [
+            // Positive (10)
+            { text: "It is certain.", type: "positive" },
+            { text: "It is decidedly so.", type: "positive" },
+            { text: "Without a doubt.", type: "positive" },
+            { text: "Yes – definitely.", type: "positive" },
+            { text: "You may rely on it.", type: "positive" },
+            { text: "As I see it, yes.", type: "positive" },
+            { text: "Most likely.", type: "positive" },
+            { text: "Outlook good.", type: "positive" },
+            { text: "Yes.", type: "positive" },
+            { text: "Signs point to yes.", type: "positive" },
+            // Neutral (5)
+            { text: "Reply hazy, try again.", type: "neutral" },
+            { text: "Ask again later.", type: "neutral" },
+            { text: "Better not tell you now.", type: "neutral" },
+            { text: "Cannot predict now.", type: "neutral" },
+            { text: "Concentrate and ask again.", type: "neutral" },
+            // Negative (5)
+            { text: "Don't count on it.", type: "negative" },
+            { text: "My reply is no.", type: "negative" },
+            { text: "My sources say no.", type: "negative" },
+            { text: "Outlook not so good.", type: "negative" },
+            { text: "Very doubtful.", type: "negative" }
         ];
 
-        // DOM Element References
-        const userQuestionInput = document.getElementById('userQuestion');
-        const charCounter = document.getElementById('charCounter');
-        const validationMsg = document.getElementById('validationMsg');
+        const questionInput = document.getElementById('questionInput');
+        const charCount = document.getElementById('charCount');
+        const errorMsg = document.getElementById('errorMsg');
         const shakeBtn = document.getElementById('shakeBtn');
-        const eightBall = document.getElementById('eightBall');
-        const windowOuter = document.getElementById('windowOuter');
-        const triangleWrapper = document.getElementById('triangleWrapper');
-        const answerText = document.getElementById('answerText');
-        const statusMsg = document.getElementById('statusMsg');
-        const headerStatus = document.getElementById('headerStatus');
-        const srLiveAnswer = document.getElementById('srLiveAnswer');
+        const magicBall = document.getElementById('magicBall');
+        const fortuneTriangle = document.getElementById('fortuneTriangle');
+        const fortuneText = document.getElementById('fortuneText');
+        const actionStatus = document.getElementById('actionStatus');
 
         let lastAnswerIndex = -1;
         let isShaking = false;
 
-        // Character counter handler
-        userQuestionInput.addEventListener('input', () => {
-            const currentLen = userQuestionInput.value.length;
-            charCounter.textContent = `${currentLen} / 240`;
-            if (currentLen > 0) {
-                validationMsg.classList.add('hidden');
+        // Character counter update
+        questionInput.addEventListener('input', () => {
+            const length = questionInput.value.length;
+            charCount.textContent = `${length}/240`;
+            if (length > 0) {
+                errorMsg.style.display = 'none';
             }
         });
 
-        // Dynamic Text Scaling to ensure longer answers fit triangle nicely
-        function setAnswerTextWithScaling(text) {
-            answerText.textContent = text;
-            const len = text.length;
-
-            if (len <= 8) {
-                answerText.style.fontSize = '0.8rem';
-            } else if (len <= 15) {
-                answerText.style.fontSize = '0.7rem';
-            } else if (len <= 20) {
-                answerText.style.fontSize = '0.62rem';
-            } else {
-                answerText.style.fontSize = '0.55rem';
+        // Shake functionality
+        shakeBtn.addEventListener('click', performShake);
+        questionInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                performShake();
             }
-        }
+        });
 
-        // Web Audio Synthesizer for realistic fluid shake sound effect
-        function playShakeSound() {
-            try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                
-                // Low rumble noise
-                const bufferSize = ctx.sampleRate * 0.6;
-                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-                const data = buffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) {
-                    data[i] = Math.random() * 2 - 1;
-                }
-
-                const noise = ctx.createBufferSource();
-                noise.buffer = buffer;
-
-                const filter = ctx.createBiquadFilter();
-                filter.type = 'lowpass';
-                filter.frequency.setValueAtTime(180, ctx.currentTime);
-                filter.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.6);
-
-                const gain = ctx.createGain();
-                gain.gain.setValueAtTime(0.3, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
-
-                noise.connect(filter);
-                filter.connect(gain);
-                gain.connect(ctx.destination);
-
-                noise.start();
-            } catch (e) {
-                // Audio Context fallback if muted/unsupported
-            }
-        }
-
-        // Main Shake Logic
-        function shakeBall() {
+        function performShake() {
             if (isShaking) return;
 
-            const questionText = userQuestionInput.value.trim();
-
-            // Validate Input
+            const questionText = questionInput.value.trim();
             if (!questionText) {
-                validationMsg.classList.remove('hidden');
-                userQuestionInput.focus();
+                errorMsg.style.display = 'block';
+                questionInput.focus();
                 return;
             }
 
-            validationMsg.classList.add('hidden');
             isShaking = true;
             shakeBtn.disabled = true;
+            errorMsg.style.display = 'none';
+            actionStatus.textContent = "The ball is tumbling through the unknown...";
 
-            // UI Status Updates
-            headerStatus.textContent = "CONSULTING FATE...";
-            statusMsg.textContent = "The liquid is swirling...";
+            // Reset triangle look temporarily during shake
+            fortuneText.style.opacity = '0.2';
+            magicBall.classList.add('shaking');
 
-            // Play audio effect
-            playShakeSound();
-
-            // Pick non-consecutive random answer
+            // Pick random answer with consecutive duplicate check
             let randomIndex;
             do {
-                randomIndex = Math.floor(Math.random() * ANSWERS.length);
-            } while (randomIndex === lastAnswerIndex && ANSWERS.length > 1);
-            
+                randomIndex = Math.floor(Math.random() * answers.length);
+            } while (randomIndex === lastAnswerIndex && answers.length > 1);
             lastAnswerIndex = randomIndex;
-            const selectedAnswer = ANSWERS[randomIndex];
 
-            // 1. Hide triangle inside liquid (fade out and sink)
-            triangleWrapper.style.opacity = '0';
-            triangleWrapper.style.transform = 'scale(0.5) translateY(15px)';
+            const selected = answers[randomIndex];
 
-            // 2. Trigger 3D Physical Ball Shake Animation
-            eightBall.classList.add('shaking');
-
-            // 3. Process answer display halfway through shake
             setTimeout(() => {
-                // Set text & dynamic font scale
-                setAnswerTextWithScaling(selectedAnswer.text);
+                magicBall.classList.remove('shaking');
+                
+                // Set color theme
+                fortuneTriangle.className = 'fortune-triangle';
+                if (selected.type === 'positive') {
+                    fortuneTriangle.style.boxShadow = 'inset 0 0 15px rgba(20, 184, 166, 0.5)';
+                    fortuneText.style.color = '#5eead4';
+                } else if (selected.type === 'neutral') {
+                    fortuneTriangle.style.boxShadow = 'inset 0 0 15px rgba(59, 130, 246, 0.5)';
+                    fortuneText.style.color = '#93c5fd';
+                } else {
+                    fortuneTriangle.style.boxShadow = 'inset 0 0 15px rgba(244, 63, 94, 0.5)';
+                    fortuneText.style.color = '#fda4af';
+                }
 
-                // Update Window Tint Class
-                windowOuter.className = `window-outer tint-${selectedAnswer.type}`;
-
-                // Reveal triangle with floating fade-in effect
-                triangleWrapper.style.opacity = '1';
-                triangleWrapper.style.transform = 'scale(1) translateY(0px)';
-            }, 600);
-
-            // 4. Complete shake sequence
-            setTimeout(() => {
-                eightBall.classList.remove('shaking');
-                isShaking = false;
+                fortuneText.textContent = selected.text;
+                fortuneText.style.opacity = '1';
+                
+                actionStatus.textContent = "The ball has spoken. Ask again whenever you like.";
                 shakeBtn.disabled = false;
-
-                // Update Accessible Live Region & Statuses
-                srLiveAnswer.textContent = `The Magic 8-Ball says: ${selectedAnswer.text}`;
-                headerStatus.textContent = "ANSWER REVEALED";
-                statusMsg.textContent = "The ball has spoken. Ask again whenever you like.";
-            }, 900);
+                isShaking = false;
+            }, 600);
         }
     </script>
 </body>
