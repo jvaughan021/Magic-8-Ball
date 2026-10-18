@@ -191,7 +191,6 @@
             box-shadow: inset 0 -3px 6px rgba(0,0,0,0.3), 0 3px 8px rgba(0,0,0,0.5);
         }
 
-        /* Clean circular answer window with no clipping */
         .answer-window {
             width: 145px;
             height: 145px;
@@ -549,12 +548,26 @@
         let isShaking = false;
         let currentFortune = "";
 
-        // Web Audio API Sound Effects Generator
+        // Persistent AudioContext for 100% reliable sound across all shakes
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) {
+                    audioCtx = new AudioContext();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
         function playMysticSound(type) {
             try {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                if (!AudioContext) return;
-                const ctx = new AudioContext();
+                const ctx = getAudioContext();
+                if (!ctx) return;
 
                 if (type === 'shake') {
                     for (let i = 0; i < 4; i++) {
@@ -595,14 +608,24 @@
             }
         });
 
-        // Event Listeners
-        shakeBtn.addEventListener('click', () => performShake('question'));
-        dailyBtn.addEventListener('click', handleDailyFortune);
-        shareBtn.addEventListener('click', handleShare);
+        // Event Listeners with Audio Context activation on click
+        shakeBtn.addEventListener('click', () => {
+            getAudioContext();
+            performShake('question');
+        });
+        dailyBtn.addEventListener('click', () => {
+            getAudioContext();
+            handleDailyFortune();
+        });
+        shareBtn.addEventListener('click', () => {
+            getAudioContext();
+            handleShare();
+        });
 
         questionInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
+                getAudioContext();
                 performShake('question');
             }
         });
@@ -656,7 +679,6 @@
                 
                 currentFortune = selectedAnswer.text;
 
-                // Adjust text size dynamically based on length
                 if (currentFortune.length > 22) {
                     fortuneText.style.fontSize = '0.7rem';
                 } else if (currentFortune.length > 15) {
