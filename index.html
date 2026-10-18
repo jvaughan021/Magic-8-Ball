@@ -48,7 +48,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.5rem 2rem;
+            padding: 1.25rem 2rem;
             max-width: 1200px;
             width: 100%;
             margin: 0 auto;
@@ -97,7 +97,7 @@
             max-width: 1100px;
             width: 100%;
             margin: 0 auto;
-            padding: 1rem 1.5rem 3rem 1.5rem;
+            padding: 0.5rem 1.5rem 3rem 1.5rem;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -105,25 +105,25 @@
 
         .hero-section {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1.25rem;
         }
 
         h1 {
-            font-size: clamp(2.2rem, 5vw, 3.8rem);
+            font-size: clamp(2rem, 5vw, 3.6rem);
             font-weight: 800;
             letter-spacing: -0.02em;
             background: linear-gradient(135deg, #ffffff 30%, #a78bfa 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
         }
 
         .subtitle {
             color: var(--text-muted);
-            font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
             max-width: 540px;
             margin: 0 auto;
-            line-height: 1.5;
+            line-height: 1.4;
         }
 
         .content-grid {
@@ -147,8 +147,8 @@
         /* Magic 8-Ball Styling */
         .ball-container {
             position: relative;
-            width: 300px;
-            height: 300px;
+            width: 290px;
+            height: 290px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -172,23 +172,23 @@
         }
 
         .ball-number-badge {
-            width: 56px;
-            height: 56px;
+            width: 54px;
+            height: 54px;
             background: #ffffff;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 1.9rem;
             font-weight: 800;
             color: #111111;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             box-shadow: inset 0 -3px 6px rgba(0,0,0,0.3), 0 3px 8px rgba(0,0,0,0.5);
         }
 
         .answer-window {
-            width: 155px;
-            height: 155px;
+            width: 150px;
+            height: 150px;
             background: #02040a;
             border-radius: 50%;
             border: 5px solid #1e1e2d;
@@ -201,15 +201,15 @@
         }
 
         .fortune-triangle {
-            width: 140px;
-            height: 125px;
+            width: 135px;
+            height: 120px;
             background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
             clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 12px 18px 42px 18px;
+            padding: 10px 16px 40px 16px;
             transition: all 0.4s ease;
             box-shadow: inset 0 0 15px rgba(59, 130, 246, 0.5);
         }
@@ -322,7 +322,6 @@
             gap: 0.5rem;
             transition: all 0.2s ease;
             box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
-            margin-bottom: 1.25rem;
         }
 
         .shake-btn:hover:not(:disabled) {
@@ -416,6 +415,11 @@
             <p class="subtitle">Clear your mind, ask a question, and let the Magic 8-Ball reveal what fate has to say.</p>
         </section>
 
+        <!-- Prominent Ad Banner Right Above the Content -->
+        <div id="frame" style="width: 100%; max-width: 728px; margin: 0 auto 1.5rem auto; position: relative; z-index: 99998;">
+            <iframe data-aa='2458977' src='//acceptable.a-ads.com/2458977/?size=Adaptive' style='border:0; padding:0; width:100%; height:auto; overflow:hidden; display: block; margin: auto;'></iframe>
+        </div>
+
         <div class="content-grid">
             <!-- Magic 8-Ball Display -->
             <div class="ball-container">
@@ -446,11 +450,6 @@
                 <button class="shake-btn" id="shakeBtn">
                     <span>✨</span> Shake the 8-Ball
                 </button>
-
-                <!-- High Visibility Ad Unit Placement -->
-                <div id="frame" style="width: 100%; margin: 0 auto; position: relative; z-index: 99998;">
-                    <iframe data-aa='2458977' src='//acceptable.a-ads.com/2458977/?size=Adaptive' style='border:0; padding:0; width:100%; height:auto; overflow:hidden; display: block; margin: auto;'></iframe>
-                </div>
 
                 <div class="action-status" id="actionStatus" aria-live="polite">
                     Your answer is waiting to be discovered.
