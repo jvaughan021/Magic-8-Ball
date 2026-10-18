@@ -11,7 +11,6 @@
             --border-glow: rgba(139, 92, 246, 0.2);
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
-            --accent-glow: rgba(99, 102, 241, 0.3);
         }
 
         * {
@@ -21,14 +20,14 @@
         }
 
         body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-deep);
             color: var(--text-main);
             min-height: 100vh;
-            overflow-x: hidden;
             display: flex;
             flex-direction: column;
             position: relative;
+            overflow-x: hidden;
         }
 
         /* Starry background effect */
@@ -65,11 +64,10 @@
         }
 
         .brand-icon {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             border: 2px solid #8b5cf6;
             border-radius: 50%;
-            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -77,8 +75,8 @@
 
         .brand-icon::after {
             content: '';
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             background: #8b5cf6;
             border-radius: 50%;
         }
@@ -107,7 +105,7 @@
 
         .hero-section {
             text-align: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
         }
 
         h1 {
@@ -149,8 +147,8 @@
         /* Magic 8-Ball Styling */
         .ball-container {
             position: relative;
-            width: 280px;
-            height: 280px;
+            width: 300px;
+            height: 300px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -159,81 +157,81 @@
         .magic-ball {
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 35% 35%, #383838 0%, #121212 50%, #000000 100%);
+            background: radial-gradient(circle at 35% 30%, #444 0%, #151518 50%, #000000 100%);
             border-radius: 50%;
             position: relative;
             box-shadow: 
-                inset 0 -20px 40px rgba(0, 0, 0, 0.9),
-                inset 10px 10px 25px rgba(255, 255, 255, 0.15),
-                0 20px 30px rgba(0, 0, 0, 0.6),
-                0 0 50px rgba(99, 102, 241, 0.15);
+                inset 0 -20px 40px rgba(0, 0, 0, 0.95),
+                inset 10px 10px 25px rgba(255, 255, 255, 0.2),
+                0 20px 35px rgba(0, 0, 0, 0.7),
+                0 0 50px rgba(124, 58, 237, 0.2);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: transform 0.1s ease;
         }
 
         .ball-number-badge {
-            width: 54px;
-            height: 54px;
+            width: 56px;
+            height: 56px;
             background: #ffffff;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 800;
             color: #111111;
-            margin-bottom: 12px;
-            box-shadow: inset 0 -3px 6px rgba(0,0,0,0.3), 0 3px 8px rgba(0,0,0,0.4);
+            margin-bottom: 10px;
+            box-shadow: inset 0 -3px 6px rgba(0,0,0,0.3), 0 3px 8px rgba(0,0,0,0.5);
         }
 
         .answer-window {
-            width: 130px;
-            height: 130px;
-            background: #050508;
+            width: 155px;
+            height: 155px;
+            background: #02040a;
             border-radius: 50%;
-            border: 4px solid #1a1a24;
+            border: 5px solid #1e1e2d;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            box-shadow: inset 0 10px 20px rgba(0,0,0,0.9);
+            box-shadow: inset 0 10px 25px rgba(0,0,0,0.95);
             overflow: hidden;
         }
 
         .fortune-triangle {
-            width: 90px;
-            height: 80px;
-            background: linear-gradient(135deg, #0b1329 0%, #030612 100%);
-            clip-path: polygon(50% 100%, 0% 15%, 100% 15%);
+            width: 140px;
+            height: 125px;
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 22px 10px 6px 10px;
+            padding: 12px 18px 42px 18px;
             transition: all 0.4s ease;
-            box-shadow: inset 0 0 12px rgba(59, 130, 246, 0.3);
+            box-shadow: inset 0 0 15px rgba(59, 130, 246, 0.5);
         }
 
         .fortune-text {
-            font-size: 0.72rem;
-            font-weight: 700;
+            font-size: 0.75rem;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            color: #93c5fd;
-            line-height: 1.25;
-            word-break: break-word;
+            color: #e0f2fe;
+            line-height: 1.2;
+            text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+            width: 100%;
         }
 
         /* Shake Animation */
         @keyframes shake {
             0% { transform: translate(0, 0) rotate(0deg); }
-            20% { transform: translate(-10px, 5px) rotate(-6deg); }
-            40% { transform: translate(10px, -5px) rotate(6deg); }
-            60% { transform: translate(-8px, 4px) rotate(-4deg); }
-            80% { transform: translate(8px, -4px) rotate(4deg); }
+            20% { transform: translate(-12px, 6px) rotate(-8deg); }
+            40% { transform: translate(12px, -6px) rotate(8deg); }
+            60% { transform: translate(-10px, 4px) rotate(-5deg); }
+            80% { transform: translate(10px, -4px) rotate(5deg); }
             100% { transform: translate(0, 0) rotate(0deg); }
         }
 
@@ -440,8 +438,7 @@
                     <textarea id="questionInput" maxlength="240" placeholder="Will something good happen today?"></textarea>
                     <div class="input-meta">
                         <span id="errorMsg" style="color: #f87171; display: none;">Please enter a question first.</span>
-                        <span id="errorMsg" style="visibility: hidden;"></span>
-                        <span id="charCount">0/240</span>
+                        <span id="charCount" style="margin-left: auto;">0/240</span>
                     </div>
                 </div>
 
@@ -472,9 +469,9 @@
         </div>
     </main>
 
-    <!-- Footer containing the discreet, non-annoying ad unit -->
+    <!-- Footer with non-intrusive Ad Unit -->
     <footer>
-        <div id="frame" style="width: 100%; max-width: 728px; margin: 0 auto 1rem auto; position: relative; z-index: 10;">
+        <div id="frame" style="width: 100%; max-width: 728px; margin: 0 auto 1.5rem auto; position: relative; z-index: 10;">
             <iframe data-aa='2458977' src='//acceptable.a-ads.com/2458977/?size=Adaptive' style='border:0; padding:0; width:100%; height:auto; overflow:hidden; display:block; margin: auto;'></iframe>
         </div>
         <div class="footer-title">THE MAGIC 8-BALL</div>
@@ -553,11 +550,11 @@
             errorMsg.style.display = 'none';
             actionStatus.textContent = "The ball is tumbling through the unknown...";
 
-            // Reset triangle look temporarily during shake
+            // Reset text visibility during shake
             fortuneText.style.opacity = '0.2';
             magicBall.classList.add('shaking');
 
-            // Pick random answer with consecutive duplicate check
+            // Pick random answer without repeating immediately
             let randomIndex;
             do {
                 randomIndex = Math.floor(Math.random() * answers.length);
@@ -569,17 +566,31 @@
             setTimeout(() => {
                 magicBall.classList.remove('shaking');
                 
-                // Set color theme
-                fortuneTriangle.className = 'fortune-triangle';
-                if (selected.type === 'positive') {
-                    fortuneTriangle.style.boxShadow = 'inset 0 0 15px rgba(20, 184, 166, 0.5)';
-                    fortuneText.style.color = '#5eead4';
-                } else if (selected.type === 'neutral') {
-                    fortuneTriangle.style.boxShadow = 'inset 0 0 15px rgba(59, 130, 246, 0.5)';
-                    fortuneText.style.color = '#93c5fd';
+                // Adjust dynamic text size for longer fortunes
+                if (selected.text.length > 20) {
+                    fortuneText.style.fontSize = '0.62rem';
+                } else if (selected.text.length > 14) {
+                    fortuneText.style.fontSize = '0.68rem';
                 } else {
-                    fortuneTriangle.style.boxShadow = 'inset 0 0 15px rgba(244, 63, 94, 0.5)';
-                    fortuneText.style.color = '#fda4af';
+                    fortuneText.style.fontSize = '0.78rem';
+                }
+
+                // Set color theme glow
+                if (selected.type === 'positive') {
+                    fortuneTriangle.style.background = 'linear-gradient(180deg, #064e3b 0%, #022c22 100%)';
+                    fortuneTriangle.style.boxShadow = 'inset 0 0 15px rgba(20, 184, 166, 0.8)';
+                    fortuneText.style.color = '#6ee7b7';
+                    fortuneText.style.textShadow = '0 0 8px rgba(52, 211, 153, 0.8)';
+                } else if (selected.type === 'neutral') {
+                    fortuneTriangle.style.background = 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)';
+                    fortuneTriangle.style.boxShadow = 'inset 0 0 15px rgba(59, 130, 246, 0.8)';
+                    fortuneText.style.color = '#93c5fd';
+                    fortuneText.style.textShadow = '0 0 8px rgba(96, 165, 250, 0.8)';
+                } else {
+                    fortuneTriangle.style.background = 'linear-gradient(180deg, #7f1d1d 0%, #450a0a 100%)';
+                    fortuneTriangle.style.boxShadow = 'inset 0 0 15px rgba(244, 63, 94, 0.8)';
+                    fortuneText.style.color = '#fca5a5';
+                    fortuneText.style.textShadow = '0 0 8px rgba(248, 113, 113, 0.8)';
                 }
 
                 fortuneText.textContent = selected.text;
