@@ -84,7 +84,6 @@
             border-radius: 50%;
         }
 
-        /* Fixed single-line author badge */
         .creator-badge {
             font-size: 0.75rem;
             font-weight: 600;
@@ -273,7 +272,7 @@
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
-            margin-bottom: 1.25rem;
+            margin-bottom: 1rem;
         }
 
         .input-label {
@@ -294,7 +293,7 @@
             font-family: inherit;
             font-size: 0.95rem;
             resize: none;
-            height: 90px;
+            height: 80px;
             transition: all 0.2s ease;
         }
 
@@ -311,13 +310,27 @@
             color: var(--text-muted);
         }
 
+        .button-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 480px) {
+            .button-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .shake-btn {
             width: 100%;
             background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
             color: white;
             border: none;
             border-radius: 10px;
-            padding: 0.95rem;
+            padding: 0.9rem;
             font-size: 0.95rem;
             font-weight: 700;
             letter-spacing: 0.05em;
@@ -325,7 +338,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
             transition: all 0.2s ease;
             box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
         }
@@ -333,6 +346,18 @@
         .shake-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(124, 58, 237, 0.6);
+        }
+
+        .secondary-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #cbd5e1;
+        }
+
+        .secondary-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
+            color: #ffffff;
         }
 
         .shake-btn:disabled {
@@ -344,7 +369,7 @@
             text-align: center;
             font-size: 0.82rem;
             color: var(--text-muted);
-            margin-top: 1rem;
+            margin-top: 0.75rem;
         }
 
         /* Info Cards */
@@ -457,6 +482,15 @@
                     <span>✨</span> Shake the 8-Ball
                 </button>
 
+                <div class="button-row">
+                    <button class="shake-btn secondary-btn" id="dailyBtn">
+                        <span>🔮</span> Daily Fortune
+                    </button>
+                    <button class="shake-btn secondary-btn" id="shareBtn" disabled>
+                        <span>📋</span> Copy Fortune
+                    </button>
+                </div>
+
                 <div class="action-status" id="actionStatus" aria-live="polite">
                     Your answer is waiting to be discovered.
                 </div>
@@ -516,6 +550,8 @@
         const charCount = document.getElementById('charCount');
         const errorMsg = document.getElementById('errorMsg');
         const shakeBtn = document.getElementById('shakeBtn');
+        const dailyBtn = document.getElementById('dailyBtn');
+        const shareBtn = document.getElementById('shareBtn');
         const magicBall = document.getElementById('magicBall');
         const fortuneTriangle = document.getElementById('fortuneTriangle');
         const fortuneText = document.getElementById('fortuneText');
@@ -523,6 +559,48 @@
 
         let lastAnswerIndex = -1;
         let isShaking = false;
+        let currentFortune = "";
+
+        // Web Audio API Sound Effects Generator
+        function playMysticSound(type) {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+
+                if (type === 'shake') {
+                    // Sloshing / mystic rumble
+                    for (let i = 0; i < 4; i++) {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(120 + i * 40, ctx.currentTime + i * 0.1);
+                        osc.frequency.exponentialRampToValueAtTime(60, ctx.currentTime + i * 0.1 + 0.15);
+                        gain.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.1);
+                        gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + i * 0.1 + 0.15);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(ctx.currentTime + i * 0.1);
+                        osc.stop(ctx.currentTime + i * 0.1 + 0.15);
+                    }
+                } else if (type === 'reveal') {
+                    // Magical crystal chime
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                    osc.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.4); // C6
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.6);
+                }
+            } catch (e) {
+                // AudioContext might be blocked before first user interaction
+            }
+        }
 
         // Character counter update
         questionInput.addEventListener('input', () => {
@@ -533,62 +611,85 @@
             }
         });
 
-        // Shake functionality
-        shakeBtn.addEventListener('click', performShake);
+        // Event Listeners
+        shakeBtn.addEventListener('click', () => performShake('question'));
+        dailyBtn.addEventListener('click', handleDailyFortune);
+        shareBtn.addEventListener('click', handleShare);
+
         questionInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                performShake();
+                performShake('question');
             }
         });
 
-        function performShake() {
+        function performShake(mode) {
             if (isShaking) return;
 
-            const questionText = questionInput.value.trim();
-            if (!questionText) {
-                errorMsg.style.display = 'block';
-                questionInput.focus();
-                return;
+            let selectedAnswer;
+
+            if (mode === 'question') {
+                const questionText = questionInput.value.trim();
+                if (!questionText) {
+                    errorMsg.style.display = 'block';
+                    questionInput.focus();
+                    return;
+                }
             }
 
             isShaking = true;
             shakeBtn.disabled = true;
+            dailyBtn.disabled = true;
             errorMsg.style.display = 'none';
             actionStatus.textContent = "The ball is tumbling through the unknown...";
+
+            playMysticSound('shake');
 
             // Reset text visibility during shake
             fortuneText.style.opacity = '0.2';
             magicBall.classList.add('shaking');
 
-            // Pick random answer without repeating immediately
-            let randomIndex;
-            do {
-                randomIndex = Math.floor(Math.random() * answers.length);
-            } while (randomIndex === lastAnswerIndex && answers.length > 1);
-            lastAnswerIndex = randomIndex;
-
-            const selected = answers[randomIndex];
+            if (mode === 'daily') {
+                // Generate deterministic daily fortune based on today's date string
+                const todayStr = new Date().toDateString();
+                let hash = 0;
+                for (let i = 0; i < todayStr.length; i++) {
+                    hash = todayStr.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                const dailyIndex = Math.abs(hash) % answers.length;
+                selectedAnswer = answers[dailyIndex];
+            } else {
+                // Pick random answer without repeating consecutively
+                let randomIndex;
+                do {
+                    randomIndex = Math.floor(Math.random() * answers.length);
+                } while (randomIndex === lastAnswerIndex && answers.length > 1);
+                lastAnswerIndex = randomIndex;
+                selectedAnswer = answers[randomIndex];
+            }
 
             setTimeout(() => {
                 magicBall.classList.remove('shaking');
+                playMysticSound('reveal');
                 
+                currentFortune = selectedAnswer.text;
+
                 // Adjust dynamic text size for longer fortunes
-                if (selected.text.length > 20) {
+                if (currentFortune.length > 20) {
                     fortuneText.style.fontSize = '0.62rem';
-                } else if (selected.text.length > 14) {
+                } else if (currentFortune.length > 14) {
                     fortuneText.style.fontSize = '0.68rem';
                 } else {
                     fortuneText.style.fontSize = '0.78rem';
                 }
 
                 // Set color theme glow
-                if (selected.type === 'positive') {
+                if (selectedAnswer.type === 'positive') {
                     fortuneTriangle.style.background = 'linear-gradient(180deg, #064e3b 0%, #022c22 100%)';
                     fortuneTriangle.style.boxShadow = 'inset 0 0 15px rgba(20, 184, 166, 0.8)';
                     fortuneText.style.color = '#6ee7b7';
                     fortuneText.style.textShadow = '0 0 8px rgba(52, 211, 153, 0.8)';
-                } else if (selected.type === 'neutral') {
+                } else if (selectedAnswer.type === 'neutral') {
                     fortuneTriangle.style.background = 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)';
                     fortuneTriangle.style.boxShadow = 'inset 0 0 15px rgba(59, 130, 246, 0.8)';
                     fortuneText.style.color = '#93c5fd';
@@ -600,13 +701,60 @@
                     fortuneText.style.textShadow = '0 0 8px rgba(248, 113, 113, 0.8)';
                 }
 
-                fortuneText.textContent = selected.text;
+                fortuneText.textContent = currentFortune;
                 fortuneText.style.opacity = '1';
                 
-                actionStatus.textContent = "The ball has spoken. Ask again whenever you like.";
+                if (mode === 'daily') {
+                    actionStatus.textContent = "Your official daily fortune has been revealed! Come back tomorrow for a new one.";
+                } else {
+                    actionStatus.textContent = "The ball has spoken. Ask again whenever you like.";
+                }
+
                 shakeBtn.disabled = false;
+                dailyBtn.disabled = false;
+                shareBtn.disabled = false;
                 isShaking = false;
             }, 600);
+        }
+
+        function handleDailyFortune() {
+            const todayKey = 'magic8ball_daily_' + new Date().toDateString();
+            const savedFortune = localStorage.getItem(todayKey);
+
+            if (savedFortune) {
+                // Already checked today, load saved daily fortune
+                const parsed = JSON.parse(savedFortune);
+                currentFortune = parsed.text;
+                
+                fortuneText.textContent = currentFortune;
+                fortuneText.style.opacity = '1';
+                shareBtn.disabled = false;
+                actionStatus.textContent = "You already received your daily fortune today. Come back tomorrow!";
+            } else {
+                performShake('daily');
+                // Save to localStorage so it stays locked for today
+                setTimeout(() => {
+                    const activeAns = answers.find(a => a.text === currentFortune);
+                    if (activeAns) {
+                        localStorage.setItem(todayKey, JSON.stringify(activeAns));
+                    }
+                }, 700);
+            }
+        }
+
+        function handleShare() {
+            if (!currentFortune) return;
+            const shareText = `🔮 Magic 8-Ball Fortune: "${currentFortune}" — Ask your question too!`;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    const originalText = shareBtn.innerHTML;
+                    shareBtn.innerHTML = "<span>✅</span> Copied!";
+                    setTimeout(() => {
+                        shareBtn.innerHTML = originalText;
+                    }, 2000);
+                });
+            }
         }
     </script>
 </body>
